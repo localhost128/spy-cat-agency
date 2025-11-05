@@ -23,7 +23,7 @@ def get_db():
         db.close()
 
 
-db_dependency = Annotated[Session, Depends(get_db)]
+DatabaseDep = Annotated[Session, Depends(get_db)]
 
 
 class Base(DeclarativeBase): ...
