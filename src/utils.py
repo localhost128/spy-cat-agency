@@ -1,8 +1,9 @@
 import requests
 from fastapi import HTTPException, status
+from sqlalchemy.orm import Session
 
 from . import config
-from .database import get_db
+from .database import SessionLocal
 from .models.cat import Cat
 
 
@@ -10,7 +11,7 @@ def check_breed(breed_name: str) -> None:
     try:
         response = requests.get(config.CAT_API_URL, timeout=5)
         response.raise_for_status()
-        breeds = [b["name"].lower() for b in response.json()]
+        breeds = [x["name"].lower() for x in response.json()]
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -23,9 +24,12 @@ def check_breed(breed_name: str) -> None:
 
 
 def chek_cat(cat_id: int) -> None:
-    db = get_db()
-    cat = db.query(Cat).get(cat_id)
+    db: Session = SessionLocal()
+    cat: Cat | None = db.query(Cat).get(cat_id)
     if not cat:
+        db.close()
         raise ValueError(f"Cat {cat_id} does not exist")
-    if any(x.is_complete for x in cat.missions):
+    if any(not x.is_complete for x in cat.missions):
+        db.close()
         raise ValueError(f"Cat {cat_id} is on the mission")
+    db.close()

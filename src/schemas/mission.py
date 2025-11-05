@@ -29,7 +29,6 @@ class TargetBase(BaseModel):
     name: str
     country: str
     notes: str
-    mission_id: int
 
 
 class TargetrCreate(TargetBase):
@@ -37,4 +36,5 @@ class TargetrCreate(TargetBase):
 
 
 class TarhetsDetail(TargetBase):
+    mission_id: int
     is_complete: bool

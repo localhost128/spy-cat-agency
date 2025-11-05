@@ -10,12 +10,15 @@ class Mission(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     cat_id: Mapped[int | None] = mapped_column(ForeignKey("cats.id"), default=None)
-    is_complete: Mapped[bool] = mapped_column(default=False)
 
     cat: Mapped[Cat | None] = relationship(back_populates="missions")
     targets: Mapped[list["Target"]] = relationship(
         back_populates="mission", cascade="all, delete-orphan"
     )
+
+    @property
+    def is_complete(self) -> bool:
+        return bool(self.targets) and all(t.is_complete for t in self.targets)
 
 
 class Target(Base):

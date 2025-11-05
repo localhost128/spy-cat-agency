@@ -1,7 +1,6 @@
 from __future__ import annotations
 from decimal import Decimal
 
-from sqlalchemy import ForeignKey
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 
 
