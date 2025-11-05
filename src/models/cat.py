@@ -1,4 +1,5 @@
 from typing import Annotated
+from decimal import Decimal
 
 from sqlalchemy.orm import mapped_column, Mapped
 
@@ -12,4 +13,4 @@ class Cat(Base):
     name: str
     years_of_experience: int
     breed: str
-    salary: float
+    salary: Decimal
