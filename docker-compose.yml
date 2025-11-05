@@ -1,0 +1,8 @@
+services:
+  spy-cat-agency:
+    build: .
+    container_name: spy-cat-agency
+    volumes:
+      - ./database.db:/app/database.db  # keeps DB synced
+    ports:
+      - "80:80"
