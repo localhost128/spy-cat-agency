@@ -1,10 +1,16 @@
-from fastapi import APIRouter, HTTPException, status
+from typing import Annotated
+from fastapi import APIRouter, HTTPException, status, Body
 from starlette.status import HTTP_400_BAD_REQUEST
 
 from ..database import DatabaseDep
 from ..utils import chek_cat
 from ..models.mission import Mission, Target
-from ..schemas.mission import MissionCreate, MissionDetail
+from ..schemas.mission import (
+    MissionCreate,
+    MissionDetail,
+    MissionUpdateCat,
+    TargetUpdateNotes,
+)
 
 router: APIRouter = APIRouter(prefix="/missions", tags=["missions"])
 
@@ -47,8 +53,11 @@ def delete_mission(db: DatabaseDep, mission_id: int) -> Mission:
     return mission
 
 
-@router.put("/{mission_id}/assign_cat", response_model=MissionDetail)
-def update_mission_cat(db: DatabaseDep, mission_id: int, cat_id: int) -> Mission:
+@router.patch("/{mission_id}/assign_cat", response_model=MissionDetail)
+def update_mission_cat(
+    db: DatabaseDep, mission_id: int, update_cat: MissionUpdateCat
+) -> Mission:
+    cat_id: int = update_cat.cat_id
     mission: Mission | None = db.query(Mission).get(mission_id)
     if not mission:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Mission not found")
@@ -66,7 +75,7 @@ def update_mission_cat(db: DatabaseDep, mission_id: int, cat_id: int) -> Mission
     return mission
 
 
-@router.put("/{mission_id}/{target_id}/mark_complete", response_model=MissionDetail)
+@router.patch("/{mission_id}/{target_id}/mark_complete", response_model=MissionDetail)
 def mark_mission_target_complete(
     db: DatabaseDep, mission_id: int, target_id: int
 ) -> Mission:
@@ -85,10 +94,11 @@ def mark_mission_target_complete(
     return mission
 
 
-@router.put("/{mission_id}/{target_id}/update_notes", response_model=MissionDetail)
+@router.patch("/{mission_id}/{target_id}/update_notes", response_model=MissionDetail)
 def update_mission_target_notes(
-    db: DatabaseDep, mission_id: int, target_id: int, notes: str
+    db: DatabaseDep, mission_id: int, target_id: int, notes_update: TargetUpdateNotes
 ) -> Mission:
+    notes: str = notes_update.notes
     mission: Mission | None = db.query(Mission).get(mission_id)
     if not mission:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Mission not found")

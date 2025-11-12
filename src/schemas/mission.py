@@ -25,6 +25,17 @@ class MissionDetail(MissionBase):
     targets: list[TarhetsDetail]
 
 
+class MissionUpdateCat(BaseModel):
+    cat_id: int
+
+    @field_validator("cat_id", mode="after")
+    @classmethod
+    def validate_cat(cls, cat_id: int | None) -> int | None:
+        if cat_id:
+            chek_cat(cat_id)
+        return cat_id
+
+
 class TargetBase(BaseModel):
     name: str
     country: str
@@ -38,3 +49,7 @@ class TargetrCreate(TargetBase):
 class TarhetsDetail(TargetBase):
     mission_id: int
     is_complete: bool
+
+
+class TargetUpdateNotes(BaseModel):
+    notes: str
